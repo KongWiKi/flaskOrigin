@@ -8,6 +8,9 @@
 
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
+
+    Flask 0.1版本注解
+
 """
 from __future__ import with_statement
 import os
@@ -76,14 +79,22 @@ class _RequestContext(object):
     """
 
     def __init__(self, app, environ):
-        self.app = app
+        self.app = app  #
+        # 绑定当前环境信息 用于构造URL 在url_for函数中使用
         self.url_adapter = app.url_map.bind_to_environ(environ)
+        # 创建请求对象 包含请求信息
         self.request = app.request_class(environ)
+        # 创建session对象 用于存储用户会话数据到cookie中
         self.session = app.open_session(self.request)
+        # 创建g对象 用于在当前请存储全局变量
         self.g = _RequestGlobals()
+        # 存储当前请求的通过flash函数返送的函数
         self.flashes = None
 
     def __enter__(self):
+        # 一个栈
+        # 将当前请求上下文对象推送到_request_ctx_stack堆栈
+        #
         _request_ctx_stack.push(self)
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -109,6 +120,8 @@ def flash(message):
     the template has to call :func:`get_flashed_messages`.
 
     :param message: the message to be flashed.
+
+
     """
     session['_flashes'] = (session.get('_flashes', [])) + [message]
 
